@@ -1,0 +1,21 @@
+# --- Framework Base ---
+flask==3.0.0
+gunicorn==21.2.0
+
+# --- Ciberseguridad y SAST ---
+# Herramienta clave del workshop para análisis estático [cite: 170, 178]
+bandit==1.7.5
+
+# --- Testing ---
+# Necesario para ejecutar tus pruebas en el pipeline [cite: 79]
+pytest==7.4.3
+
+# --- Seguridad de Datos (Dominio de Cliente) ---
+# Para la capa de "Cifrado en Reposo" que dibujaste en tu diagrama
+cryptography==41.0.5
+passlib[argon2]==1.7.4
+
+# --- Conectividad ---
+# Para consultas al INEI y comunicación con el Message Broker
+requests==2.31.0
+redis==5.0.1
