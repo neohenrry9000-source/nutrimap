@@ -17,6 +17,6 @@ def health():
     }), 200
 
 if __name__ == "__main__":
-    # Importante: Render usa la variable de entorno PORT
     port = int(os.environ.get("PORT", 8080))
-    app.run(host='0.0.0.0', port=port)
+    # Usamos 0.0.0.0 para que Render/Docker puedan dirigir el tráfico
+    app.run(host='0.0.0.0', port=port)  # nosec B104
