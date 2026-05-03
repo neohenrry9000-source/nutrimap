@@ -1,0 +1,46 @@
+name: NutriMap Secure Pipeline
+
+on:
+  push:
+    branches: [ "main", "master" ]
+
+jobs:
+  # CAPA 1: SEGURIDAD Y CALIDAD (SAST)
+  security-and-testing:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Tools
+        run: pip install bandit pytest
+
+      - name: SAST - Scan Security Domain
+        # Buscamos vulnerabilidades en el cifrado y manejo de datos
+        run: bandit -r src/security src/customer -ll 
+
+      - name: Run Unit Tests
+        run: pytest tests/unit
+
+  # CAPA 2: EMPAQUETADO (DOCKER)
+  build-docker:
+    needs: security-and-testing
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build Image
+        run: docker build -t nutrimap-app . # Garantiza consistencia
+
+  # CAPA 3: DESPLIEGUE Y VALIDACIÓN (CD)
+  deploy-to-dev:
+    needs: build-docker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Render Dev
+        run: |
+          curl -X POST https://api.render.com/v1/services/${{ secrets.RENDER_DEV_ID }}/deploys \
+          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}"
+
+      - name: Smoke Test (Health Check)
+        # Verificamos que el Gateway y el Broker respondan
+        run: |
+          sleep 30
+          curl -f https://nutrimap-dev.onrender.com/health || exit 1
