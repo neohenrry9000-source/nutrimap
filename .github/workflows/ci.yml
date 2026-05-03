@@ -16,10 +16,10 @@ jobs:
 
       - name: SAST - Scan Security Domain
         # Buscamos vulnerabilidades en el cifrado y manejo de datos
-        run: bandit -r src/security src/customer -ll 
+        run: bandit -r src -ll 
 
       - name: Run Unit Tests
-        run: pytest tests/unit
+        run: pytest tests
 
   # CAPA 2: EMPAQUETADO (DOCKER)
   build-docker:
