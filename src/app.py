@@ -10,8 +10,9 @@ def home():
 
 # RUTA CRÍTICA: El Smoke Test de GitHub Actions busca esto exactamente
 @app.route('/health')
-def health():
-    return jsonify({"status": "healthy"}), 200
+def health_check():
+    # Solo devolvemos un mensaje de éxito para que el pipeline sepa que la app vive
+    return {"status": "ok"}, 200
 
 if __name__ == "__main__":
     # Render asigna el puerto dinámicamente, por eso usamos os.environ
