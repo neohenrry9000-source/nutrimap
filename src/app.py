@@ -3,20 +3,18 @@ import os
 
 app = Flask(__name__)
 
+# Ruta principal (opcional, para que veas algo al entrar al link)
 @app.route('/')
-def index():
-    return "NutriMap API - Sistema de Monitoreo de Anemia Activo", 200
+def home():
+    return "NutriMap API - Sistema de Monitoreo Activo", 200
 
-# Esta es la ruta que tu Smoke Test está buscando
+# RUTA CRÍTICA: El Smoke Test de GitHub Actions busca esto exactamente
 @app.route('/health')
 def health():
-    return jsonify({
-        "status": "healthy",
-        "service": "nutrimap-api",
-        "environment": os.getenv("ENVIRONMENT", "development")
-    }), 200
+    return jsonify({"status": "healthy"}), 200
 
 if __name__ == "__main__":
+    # Render asigna el puerto dinámicamente, por eso usamos os.environ
     port = int(os.environ.get("PORT", 8080))
-    # Usamos 0.0.0.0 para que Render/Docker puedan dirigir el tráfico
+    # El '# nosec B104' es para que Bandit no te dé el error de seguridad de nuevo
     app.run(host='0.0.0.0', port=port)  # nosec B104
