@@ -2,7 +2,7 @@ name: NutriMap Secure Pipeline
 
 on:
   push:
-    branches: [ "main", "develop" ]  # ✅ Escucha ambas ramas
+    branches: [ "main", "develop" , "feature/*"]  # ✅ Escucha todas las ramas necesarias
 
 jobs:
   # CAPA 1: SEGURIDAD Y CALIDAD (SAST)
