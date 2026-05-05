@@ -2,7 +2,7 @@ name: NutriMap Secure Pipeline
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: [ "main", "develop" ]  # ✅ Escucha ambas ramas
 
 jobs:
   # CAPA 1: SEGURIDAD Y CALIDAD (SAST)
@@ -10,13 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
+      
       - name: Install Tools
         run: pip install bandit pytest
 
       - name: SAST - Scan Security Domain
-        # Buscamos vulnerabilidades en el cifrado y manejo de datos
-        run: bandit -r src -ll 
+        run: bandit -r src -ll
 
       - name: Run Unit Tests
         run: pytest tests
@@ -26,27 +25,34 @@ jobs:
     needs: security-and-testing
     runs-on: ubuntu-latest
     steps:
-
       - uses: actions/checkout@v3
-      - name: Build Image
-        run: docker build -t nutrimap-app . # Garantiza consistencia
 
-  # CAPA 3: DESPLIEGUE Y VALIDACIÓN (CD)
+      - name: Build Image
+        run: docker build -t nutrimap-app .
+
+  # CAPA 3: DEPLOY DEV (solo desde develop)
   deploy-to-dev:
     needs: build-docker
+    if: github.ref == 'refs/heads/develop'  # ✅ Solo develop
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to Render Development
-        # Este paso siempre se ejecuta para mantener actualizado el entorno de pruebas
         run: |
-          curl -X POST https://api.render.com/deploy/${{ secrets.RENDER_SERVICE_ID_DEV }}?key=${{ secrets.RENDER_API_KEY }}
-  
+          curl -s -X POST \
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_DEV }}/deploys" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json"
+
+  # CAPA 4: DEPLOY PROD (solo desde main + 2 aprobaciones)
   deploy-to-prod:
-    needs: deploy-to-dev
-    # LA CLAVE: Solo se ejecuta si el código está en la rama 'main'
-    if: github.ref == 'refs/heads/main'
+    needs: build-docker
+    if: github.ref == 'refs/heads/main'     # ✅ Solo main
     runs-on: ubuntu-latest
+    environment: production                  # 👥 Requiere 2 aprobaciones
     steps:
       - name: Deploy to Render Production
         run: |
-          curl -X POST https://api.render.com/deploy/${{ secrets.RENDER_SERVICE_ID_PROD }}?key=${{ secrets.RENDER_API_KEY }}
+          curl -s -X POST \
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_PROD }}/deploys" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json"
