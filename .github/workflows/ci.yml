@@ -36,22 +36,17 @@ jobs:
     needs: build-docker
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy to Render Dev
+      - name: Deploy to Render Development
+        # Este paso siempre se ejecuta para mantener actualizado el entorno de pruebas
         run: |
-          curl -X POST https://api.render.com/v1/services/${{ secrets.RENDER_DEV_ID }}/deploys \
-          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}"
-
-      - name: Smoke Test (Health Check)
+          curl -X POST https://api.render.com/deploy/${{ secrets.RENDER_SERVICE_ID_DEV }}?key=${{ secrets.RENDER_API_KEY }}
+  
+  deploy-to-prod:
+    needs: deploy-to-dev
+    # LA CLAVE: Solo se ejecuta si el código está en la rama 'main'
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Render Production
         run: |
-            for i in {1..10}; do
-                echo "Attempt $i: Checking health..."
-                if curl -f https://nutrimap-dev.onrender.com/health; then
-                    echo "Health check passed!"
-                    exit 0
-                fi
-                if [ $i -lt 10 ]; then
-                    sleep 10
-                fi
-            done
-            echo "Health check failed after 10 attempts"
-            exit 1
+          curl -X POST https://api.render.com/deploy/${{ secrets.RENDER_SERVICE_ID_PROD }}?key=${{ secrets.RENDER_API_KEY }}
