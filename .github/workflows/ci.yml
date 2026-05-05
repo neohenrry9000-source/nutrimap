@@ -2,7 +2,7 @@ name: NutriMap Secure Pipeline
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: [ "main", "develop" ]  # ✅ Escucha ambas ramas
 
 jobs:
   # CAPA 1: SEGURIDAD Y CALIDAD (SAST)
@@ -10,13 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
+      
       - name: Install Tools
         run: pip install bandit pytest
 
       - name: SAST - Scan Security Domain
-        # Buscamos vulnerabilidades en el cifrado y manejo de datos
-        run: bandit -r src -ll 
+        run: bandit -r src -ll
 
       - name: Run Unit Tests
         run: pytest tests
@@ -26,32 +25,34 @@ jobs:
     needs: security-and-testing
     runs-on: ubuntu-latest
     steps:
-
       - uses: actions/checkout@v3
-      - name: Build Image
-        run: docker build -t nutrimap-app . # Garantiza consistencia
 
-  # CAPA 3: DESPLIEGUE Y VALIDACIÓN (CD)
+      - name: Build Image
+        run: docker build -t nutrimap-app .
+
+  # CAPA 3: DEPLOY DEV (solo desde develop)
   deploy-to-dev:
     needs: build-docker
+    if: github.ref == 'refs/heads/develop'  # ✅ Solo develop
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy to Render Dev
+      - name: Deploy to Render Development
         run: |
-          curl -X POST https://api.render.com/v1/services/${{ secrets.RENDER_DEV_ID }}/deploys \
-          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}"
+          curl -s -X POST \
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_DEV }}/deploys" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json"
 
-      - name: Smoke Test (Health Check)
+  # CAPA 4: DEPLOY PROD (solo desde main + 2 aprobaciones)
+  deploy-to-prod:
+    needs: build-docker
+    if: github.ref == 'refs/heads/main'     # ✅ Solo main
+    runs-on: ubuntu-latest
+    environment: production                  # 👥 Requiere 2 aprobaciones
+    steps:
+      - name: Deploy to Render Production
         run: |
-            for i in {1..10}; do
-                echo "Attempt $i: Checking health..."
-                if curl -f https://nutrimap-dev.onrender.com/health; then
-                    echo "Health check passed!"
-                    exit 0
-                fi
-                if [ $i -lt 10 ]; then
-                    sleep 10
-                fi
-            done
-            echo "Health check failed after 10 attempts"
-            exit 1
+          curl -s -X POST \
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_PROD }}/deploys" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json"

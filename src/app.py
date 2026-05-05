@@ -1,21 +1,30 @@
+from src.bussines.analytics import get_anemia_stats
 from flask import Flask, jsonify
 import os
 
 app = Flask(__name__)
 
-# Ruta principal (opcional, para que veas algo al entrar al link)
 @app.route('/')
 def home():
-    return "NutriMap API - Sistema de Monitoreo Activo", 200
+    return "NutriMap Activo", 200
 
-# RUTA CRÍTICA: El Smoke Test de GitHub Actions busca esto exactamente
+@app.route('/api/v1/anemia/stats')
+def anemia_stats():
+    stats = get_anemia_stats()
+    return jsonify(stats), 200
+
+# Esta es la ruta que te está dando 404
 @app.route('/health')
-def health_check():
-    # Solo devolvemos un mensaje de éxito para que el pipeline sepa que la app vive
-    return {"status": "ok"}, 200
+def health():
+    return jsonify({"status": "healthy"}), 200
+
+
+
+
+
 
 if __name__ == "__main__":
-    # Render asigna el puerto dinámicamente, por eso usamos os.environ
+    # Render necesita leer la variable PORT
     port = int(os.environ.get("PORT", 8080))
-    # El '# nosec B104' es para que Bandit no te dé el error de seguridad de nuevo
+    # El # nosec evita que el pipeline falle por seguridad
     app.run(host='0.0.0.0', port=port)  # nosec B104

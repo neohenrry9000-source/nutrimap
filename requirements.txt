@@ -19,3 +19,6 @@ passlib[argon2]==1.7.4
 # Para consultas al INEI y comunicación con el Message Broker
 requests==2.31.0
 redis==5.0.1
+
+pandas==2.0.3
+openpyxl==3.1.2
