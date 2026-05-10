@@ -1,4 +1,4 @@
-from src.bussines.analytics import get_anemia_stats
+from src.business.analytics import get_anemia_stats
 from flask import Flask, jsonify
 import os
 
