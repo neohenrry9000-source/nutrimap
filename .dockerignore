@@ -1,0 +1,16 @@
+.git
+.gitignore
+.github
+__pycache__
+*.pyc
+venv/
+.env
+.env.local
+tests/
+pytest.ini
+.coverage
+Dockerfile
+.dockerignore
+.vscode/
+.idea/
+requirements-dev.txt

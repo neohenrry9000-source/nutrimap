@@ -43,9 +43,31 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -H "Content-Type: application/json"
 
+  smoke-test:
+    needs: deploy-to-dev
+    runs-on: ubuntu-latest
+    steps:
+      - name: Esperar que Render inicie
+        run: sleep 30
+
+      - name: Verificar que Dev responde
+        run: |
+          for i in 1 2 3 4 5; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+              https://nutrimap-dev.onrender.com/health)
+            if [[ $STATUS -eq 200 ]]; then
+              echo "✅ Dev responde correctamente (HTTP $STATUS)"
+              exit 0
+            fi
+            echo "Intento $i fallido (HTTP $STATUS), reintentando..."
+            sleep 10
+          done
+          echo "❌ Dev no responde después de 5 intentos"
+          exit 1
+
   # CAPA 4: DEPLOY PROD (solo desde main + 2 aprobaciones)
   deploy-to-prod:
-    needs: build-docker
+    needs: smoke-test
     if: github.ref == 'refs/heads/main'     # ✅ Solo main
     runs-on: ubuntu-latest
     environment: production                  # 👥 Requiere 2 aprobaciones
