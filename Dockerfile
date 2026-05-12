@@ -8,7 +8,7 @@ LABEL version="1.0"
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
-WORKDIR /app
+WORKDIR /app/src
 
 # Dependencias primero (aprovecha cache de Docker)
 COPY requirements.txt .
