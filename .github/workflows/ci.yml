@@ -54,7 +54,7 @@ jobs:
         run: |
           for i in 1 2 3 4 5; do
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-              https://nutrimap-dev.onrender.com/health)
+              https://nutrimap-dev.onrender.com/api/health)
             if [[ $STATUS -eq 200 ]]; then
               echo "✅ Dev responde correctamente (HTTP $STATUS)"
               exit 0
