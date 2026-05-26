@@ -2,41 +2,34 @@ name: NutriMap Secure Pipeline
 
 on:
   push:
-    branches: [ "main", "develop" , "feature/*"]  # ✅ Escucha todas las ramas necesarias
+    branches: [ "main", "develop", "feature/*" ]
 
 jobs:
-  # CAPA 1: SEGURIDAD Y CALIDAD (SAST)
   security-and-testing:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
       - name: Install Tools
         run: pip install bandit pytest
-
       - name: SAST - Scan Security Domain
-        run: bandit -r src -ll
-
+        run: bandit -r backend/src -ll
       - name: Run Unit Tests
-        run: pytest tests
+        run: pytest backend/tests
 
-  # CAPA 2: EMPAQUETADO (DOCKER)
   build-docker:
     needs: security-and-testing
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
       - name: Build Image
-        run: docker build -t nutrimap-app .
+        run: docker build -t nutrimap-app ./backend
 
-  # CAPA 3: DEPLOY DEV (solo desde develop)
   deploy-to-dev:
     needs: build-docker
-    if: github.ref == 'refs/heads/develop'  # ✅ Solo develop
+    if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy to Render Development
+      - name: Deploy to Render Dev
         run: |
           curl -s -X POST \
             "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_DEV }}/deploys" \
@@ -49,32 +42,49 @@ jobs:
     steps:
       - name: Esperar que Render inicie
         run: sleep 30
-
       - name: Verificar que Dev responde
         run: |
           for i in 1 2 3 4 5; do
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
               https://nutrimap-dev.onrender.com/api/health)
             if [[ $STATUS -eq 200 ]]; then
-              echo "✅ Dev responde correctamente (HTTP $STATUS)"
+              echo "✅ Dev responde (HTTP $STATUS)"
               exit 0
             fi
-            echo "Intento $i fallido (HTTP $STATUS), reintentando..."
+            echo "Intento $i fallido, reintentando..."
             sleep 10
           done
-          echo "❌ Dev no responde después de 5 intentos"
           exit 1
 
-  # CAPA 4: DEPLOY PROD (solo desde main + 2 aprobaciones)
   deploy-to-prod:
-    needs: smoke-test
-    if: github.ref == 'refs/heads/main'     # ✅ Solo main
+    needs: build-docker
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    environment: production                  # 👥 Requiere 2 aprobaciones
+    environment: production
     steps:
-      - name: Deploy to Render Production
+      - name: Deploy to Render Prod
         run: |
           curl -s -X POST \
             "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_PROD }}/deploys" \
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -H "Content-Type: application/json"
+
+  smoke-test-prod:
+    needs: deploy-to-prod
+    runs-on: ubuntu-latest
+    steps:
+      - name: Esperar que Render inicie
+        run: sleep 30
+      - name: Verificar que Prod responde
+        run: |
+          for i in 1 2 3 4 5; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+              https://nutrimap-prod.onrender.com/api/health)
+            if [[ $STATUS -eq 200 ]]; then
+              echo "✅ Prod responde (HTTP $STATUS)"
+              exit 0
+            fi
+            echo "Intento $i fallido, reintentando..."
+            sleep 10
+          done
+          exit 1
