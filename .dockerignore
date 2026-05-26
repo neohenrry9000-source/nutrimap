@@ -9,8 +9,8 @@ venv/
 tests/
 pytest.ini
 .coverage
-Dockerfile
 .dockerignore
 .vscode/
 .idea/
 requirements-dev.txt
+frontend/
