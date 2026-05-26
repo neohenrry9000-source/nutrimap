@@ -1,25 +1,19 @@
 # --- Framework Base ---
-flask==3.0.0
-gunicorn==21.2.0
+Flask==3.0.3
+gunicorn==22.0.0
 
-# --- Ciberseguridad y SAST ---
-# Herramienta clave del workshop para análisis estático [cite: 170, 178]
-bandit==1.7.5
+# --- CORS y Rate Limiting ---
+flask-cors==4.0.1
+Flask-Limiter==3.8.0
 
-# --- Testing ---
-# Necesario para ejecutar tus pruebas en el pipeline [cite: 79]
-pytest==7.4.3
-
-# --- Seguridad de Datos (Dominio de Cliente) ---
-# Para la capa de "Cifrado en Reposo" que dibujaste en tu diagrama
-cryptography==41.0.5
+# --- Supabase ---
+supabase==2.6.0
+# --- Autenticación ---
+PyJWT==2.9.0
 passlib[argon2]==1.7.4
-
-# --- Conectividad ---
-# Para consultas al INEI y comunicación con el Message Broker
-requests==2.31.0
-redis==5.0.1
-
+# --- Validación ---
+pydantic[email]==2.8.2
+# --- Data / INEI ---
 pandas==2.0.3
-numpy==1.26.4  
+numpy==1.26.4
 openpyxl==3.1.2
