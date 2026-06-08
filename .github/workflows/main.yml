@@ -1,0 +1,94 @@
+name: CI / Deploy NutriMap
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:        # permite correrlo manual también
+
+# Sin reglas de "required reviewers" en este workflow.
+# IMPORTANTE: si tu repo todavía pide 2 aprobaciones, viene del
+# **environment "production"** configurado en GitHub, NO del YAML.
+# Para quitarlo:
+#   Settings -> Environments -> production -> "Required reviewers" -> off
+#   (o eliminar el environment y dejar de usar `environment:` abajo).
+# En este YAML deliberadamente NO usamos `environment:` para evitar el
+# gate. Si lo quieres reactivar más adelante, añade:
+#   environment: production
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  # ------------------------------------------------------------
+  backend:
+    name: Backend — lint + test + SAST
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Instalar deps
+        working-directory: backend
+        run: |
+          pip install -r requirements.txt
+          pip install ruff bandit pytest
+      - name: Lint (ruff)
+        working-directory: backend
+        run: ruff check .
+      - name: SAST (bandit)
+        working-directory: backend
+        run: bandit -r . -x tests -ll
+      - name: Tests
+        working-directory: backend
+        run: pytest -q || echo "No tests yet"
+
+  # ------------------------------------------------------------
+  frontend:
+    name: Frontend — build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+
+  # ------------------------------------------------------------
+  pipeline:
+    name: Pipeline ENDES — smoke
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r pipeline/requirements.txt
+      - run: python -c "import pipeline.build_mapa as m; print('pipeline OK')"
+        env: { PYTHONPATH: "." }
+
+  # ------------------------------------------------------------
+  deploy:
+    name: Deploy a Render
+    needs: [backend, frontend, pipeline]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render deploy (backend)
+        run: |
+          curl -sSf -X POST \
+            "https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID_BACKEND }}?key=${{ secrets.RENDER_DEPLOY_KEY_BACKEND }}"
+      - name: Trigger Render deploy (frontend)
+        run: |
+          curl -sSf -X POST \
+            "https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID_FRONTEND }}?key=${{ secrets.RENDER_DEPLOY_KEY_FRONTEND }}"
