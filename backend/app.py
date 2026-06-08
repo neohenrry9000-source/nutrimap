@@ -1,3 +1,13 @@
+"""
+NutriMap API — entry point.
+
+Defensa en profundidad:
+  * Headers de seguridad (CSP, HSTS, X-Frame-Options, etc.)
+  * CORS restrictivo a orígenes conocidos
+  * Rate limiting por defecto + límites estrictos en /login
+  * Manejo de errores que NO filtra stack traces
+  * Logs estructurados
+"""
 import logging
 from flask import Flask, jsonify
 from flask_cors import CORS
@@ -11,35 +21,42 @@ from routes.organizaciones import bp_org
 from routes.donaciones    import bp_don
 from routes.mapa          import bp_mapa
 
+
 def create_app() -> Flask:
     app = Flask(__name__)
     app.config.from_object(get_config())
 
+    # --- CORS: solo orígenes explícitos, credenciales en header Authorization
     CORS(app,
          origins=app.config["CORS_ORIGINS"],
          supports_credentials=False,
          allow_headers=["Content-Type", "Authorization"],
          methods=["GET", "POST", "PUT", "OPTIONS"])
 
+    # --- Rate limiter global (memoria en demo; Redis en prod)
     limiter = Limiter(get_remote_address, app=app,
                       default_limits=[app.config["RATELIMIT_DEFAULT"]],
                       storage_uri=app.config["RATELIMIT_STORAGE_URI"])
     app.extensions["limiter"] = limiter
 
+    # --- Headers de seguridad (after_request)
     register_security_headers(app)
 
+    # --- Logging básico (no usar print en prod)
     logging.basicConfig(level=logging.INFO,
                         format="%(asctime)s %(levelname)s %(name)s %(message)s")
 
-    app.register_blueprint(bp_auth, url_prefix="/api")
-    app.register_blueprint(bp_org,  url_prefix="/api")
-    app.register_blueprint(bp_don,  url_prefix="/api")
-    app.register_blueprint(bp_mapa, url_prefix="/api")
+    # --- Blueprints
+    app.register_blueprint(bp_auth,  url_prefix="/api")
+    app.register_blueprint(bp_org,   url_prefix="/api")
+    app.register_blueprint(bp_don,   url_prefix="/api")
+    app.register_blueprint(bp_mapa,  url_prefix="/api")
 
+    # --- Health
     @app.get("/api/health")
-    def health():
-        return {"status": "ok"}
+    def health(): return {"status": "ok"}
 
+    # --- Errores: respuestas genéricas, sin stack trace al cliente
     @app.errorhandler(400)
     def _400(e): return jsonify(error="bad_request"), 400
     @app.errorhandler(401)
@@ -57,7 +74,9 @@ def create_app() -> Flask:
 
     return app
 
+
+# gunicorn -w 2 -b 0.0.0.0:8000 app:app
 app = create_app()
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=8000)  # nosec B104
+    app.run(host="127.0.0.1", port=8000)

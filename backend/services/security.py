@@ -1,19 +1,31 @@
+"""
+Servicios transversales de seguridad:
+  * Argon2id para password hashing (passlib)
+  * Emisión / verificación de JWT (PyJWT)
+  * Decoradores require_auth y require_role
+"""
 import functools
 from datetime import datetime, timezone
+
 import jwt
 from flask import current_app, request, g, jsonify
 from passlib.hash import argon2
 
+# Argon2id con parámetros razonables para demo + servidores chicos.
+# En producción aumenta time_cost y memory_cost según OWASP.
 _HASHER = argon2.using(type="ID", rounds=3, memory_cost=65536, parallelism=2)
+
 
 def hash_password(plain: str) -> str:
     return _HASHER.hash(plain)
+
 
 def verify_password(plain: str, hashed: str) -> bool:
     try:
         return _HASHER.verify(plain, hashed)
     except Exception:
         return False
+
 
 def issue_jwt(user_id: str, rol: str) -> str:
     cfg = current_app.config
@@ -26,6 +38,7 @@ def issue_jwt(user_id: str, rol: str) -> str:
     }
     return jwt.encode(payload, cfg["JWT_SECRET"], algorithm=cfg["JWT_ALG"])
 
+
 def decode_jwt(token: str) -> dict | None:
     try:
         return jwt.decode(token,
@@ -33,6 +46,7 @@ def decode_jwt(token: str) -> dict | None:
                           algorithms=[current_app.config["JWT_ALG"]])
     except jwt.PyJWTError:
         return None
+
 
 def require_auth(fn):
     @functools.wraps(fn)
@@ -46,6 +60,7 @@ def require_auth(fn):
         g.user = payload
         return fn(*a, **kw)
     return wrapper
+
 
 def require_role(*roles):
     def deco(fn):
