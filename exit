@@ -1,0 +1,67 @@
+ .dockerignore                                      |   16 [32m+[m
+ .github/workflows/ci.yml                           |   90 [32m+[m
+ .github/workflows/main.yml                         |   94 [31m-[m
+ .gitignore                                         |   45 [32m+[m[31m-[m
+ README.md                                          |  128 [32m+[m[31m-[m
+ backend/.env.example                               |   11 [31m-[m
+ backend/Dockerfile                                 |   30 [32m+[m
+ backend/middleware/security_headers.py             |   22 [31m-[m
+ backend/requirements.txt                           |   17 [32m+[m[31m-[m
+ backend/routes/donaciones.py                       |   48 [31m-[m
+ backend/routes/mapa.py                             |   30 [31m-[m
+ backend/routes/organizaciones.py                   |   85 [31m-[m
+ backend/{ => src}/app.py                           |   33 [32m+[m[31m-[m
+ backend/{ => src}/config.py                        |   24 [32m+[m[31m-[m
+ .../src/data/Anemia_Desnutricion_Peru_2024.xlsx    |  Bin [31m0[m -> [32m10374[m bytes
+ backend/{ => src}/middleware/__init__.py           |    0
+ backend/src/middleware/security_headers.py         |   11 [32m+[m
+ backend/{ => src}/routes/__init__.py               |    0
+ backend/{ => src}/routes/auth.py                   |   24 [32m+[m[31m-[m
+ backend/src/routes/donaciones.py                   |   25 [32m+[m
+ backend/src/routes/mapa.py                         |   10 [32m+[m
+ backend/src/routes/organizaciones.py               |   27 [32m+[m
+ backend/{ => src}/services/__init__.py             |    0
+ backend/{ => src}/services/security.py             |   17 [32m+[m[31m-[m
+ backend/{ => src}/services/supabase_client.py      |   14 [32m+[m[31m-[m
+ backend/{ => src}/validators/__init__.py           |    0
+ backend/src/validators/schemas.py                  |   12 [32m+[m
+ backend/tests/unit/test_health.py                  |    3 [32m+[m
+ backend/validators/schemas.py                      |   64 [31m-[m
+ frontend/.gitignore                                |   24 [32m+[m
+ frontend/README.md                                 |   16 [32m+[m
+ frontend/eslint.config.js                          |   21 [32m+[m
+ frontend/index.html                                |   24 [32m+[m[31m-[m
+ frontend/package-lock.json                         | 3611 [32m++++++++[m[31m------------[m
+ frontend/package.json                              |   33 [32m+[m[31m-[m
+ frontend/postcss.config.js                         |    1 [31m-[m
+ frontend/public/favicon.svg                        |    1 [32m+[m
+ frontend/public/icons.svg                          |   24 [32m+[m
+ frontend/src/App.css                               |  184 [32m+[m
+ frontend/src/App.jsx                               |   29 [32m+[m[31m-[m
+ frontend/src/assets/hero.png                       |  Bin [31m0[m -> [32m13057[m bytes
+ frontend/src/assets/react.svg                      |    1 [32m+[m
+ frontend/src/assets/vite.svg                       |    1 [32m+[m
+ frontend/src/components/DonateModal.jsx            |  115 [31m-[m
+ frontend/src/components/Legend.jsx                 |   22 [31m-[m
+ frontend/src/components/MapView.jsx                |   82 [31m-[m
+ frontend/src/components/MapaInteractivo.jsx        |   88 [32m+[m
+ frontend/src/components/Navbar.jsx                 |   69 [32m+[m
+ frontend/src/components/OrgCard.jsx                |   25 [31m-[m
+ frontend/src/components/SidePanel.jsx              |   74 [31m-[m
+ .../src/components/SidebarInfo.jsx                 |    0
+ frontend/src/components/login.jsx                  |    0
+ frontend/src/hooks/useAuth.js                      |   34 [32m+[m[31m-[m
+ frontend/src/index.css                             |  115 [32m+[m[31m-[m
+ frontend/src/main.jsx                              |   18 [32m+[m[31m-[m
+ frontend/src/pages/Dashboard.jsx                   |   69 [31m-[m
+ frontend/src/pages/Home.jsx                        |  108 [32m+[m
+ frontend/src/pages/Login.jsx                       |   84 [31m-[m
+ frontend/src/pages/Loginpage.jsx                   |  121 [32m+[m
+ frontend/src/services/api.js                       |   55 [32m+[m[31m-[m
+ frontend/src/utils/colors.js                       |   11 [31m-[m
+ frontend/tailwind.config.js                        |   18 [31m-[m
+ frontend/vite.config.js                            |   11 [32m+[m[31m-[m
+ pipeline/build_mapa.py                             |  264 [31m--[m
+ pipeline/requirements.txt                          |    1 [31m-[m
+ sql/schema.sql                                     |  212 [31m--[m
+ 66 files changed, 2524 insertions(+), 3922 deletions(-)
