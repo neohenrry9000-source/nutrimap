@@ -1,30 +1,20 @@
+# Usar imagen ligera de Python 3.11
 FROM python:3.11-slim
 
-LABEL maintainer="nutrimap-team"
-LABEL version="1.0"
-
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
-
+# Establecer el directorio de trabajo dentro del contenedor
 WORKDIR /app
 
+# Copiar el archivo de dependencias primero
 COPY requirements.txt .
+
+# Instalar las dependencias
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Copiar todo el resto del código del backend al contenedor
 COPY . .
 
-RUN addgroup --system appgroup && \
-    adduser --system --ingroup appgroup appuser && \
-    chown -R appuser:appgroup /app
+# Exponer el puerto (por defecto Flask usa 5000)
+EXPOSE 5000
 
-USER appuser
-
-EXPOSE 8080
-
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8080/api/health')" || exit 1
-
-WORKDIR /app/src
-
-# nosec B104
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "1", "--timeout", "120", "--graceful-timeout", "60", "app:app"]
+# Comando para arrancar la aplicación
+CMD ["python", "app.py"]

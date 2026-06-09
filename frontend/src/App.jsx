@@ -1,20 +1,15 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import Home       from './pages/Home'
-import LoginPage  from './pages/LoginPage'
-import { useAuth } from './hooks/useAuth'
+import { Routes, Route, Navigate } from "react-router-dom";
+import Login from "./pages/Login.jsx";
+import Dashboard from "./pages/Dashboard.jsx";
+import { useAuth } from "./hooks/useAuth.js";
 
-function App() {
-  const { isAuth } = useAuth()
-
+export default function App() {
+  const { token } = useAuth();
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/"      element={<Home />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="*"      element={<Navigate to="/" />} />
-      </Routes>
-    </BrowserRouter>
-  )
+    <Routes>
+      <Route path="/login" element={token ? <Navigate to="/" /> : <Login />} />
+      <Route path="/" element={token ? <Dashboard /> : <Navigate to="/login" />} />
+      <Route path="*" element={<Navigate to="/" />} />
+    </Routes>
+  );
 }
-
-export default App

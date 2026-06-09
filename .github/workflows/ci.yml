@@ -8,11 +8,12 @@ jobs:
   security-and-testing:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4 # Actualizado a v4 para evitar warnings de Node.js
       - name: Install Tools
         run: pip install bandit pytest
       - name: SAST - Scan Security Domain
-        run: bandit -r backend/src -ll
+        # Escanea toda la carpeta backend, pero excluye (exclude) los tests
+        run: bandit -r backend/ -x backend/tests -ll
       - name: Run Unit Tests
         run: pytest backend/tests
 
