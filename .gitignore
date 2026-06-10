@@ -1,25 +1,36 @@
+# Entornos y dependencias
+.venv/
+venv/
+node_modules/
+
+# Variables de entorno
+.env
+backend/.env
+frontend/.env
+.env.local
+.env.development
+.env.production
+
 # Python
 __pycache__/
 *.pyc
 *.pyo
-venv/
-env/
-.Python
-*.egg-info/
+*.pyd
+.pytest_cache/
 
-# Entorno
-.env
-.env.local
-*.env
+# Flask
+instance/
 
-# Testing
-.coverage
-htmlcov/
+# Vite / React
+frontend/dist/
+dist/
 
-# IDE
-.vscode/
-.idea/
-*.swp
-
-# Docker
+# Logs
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Sistema
+.DS_Store
+Thumbs.db
