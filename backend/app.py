@@ -1,3 +1,4 @@
+<<<<<<< HEAD:backend/app.py
 """
 NutriMap API — entry point.
 
@@ -8,6 +9,11 @@ Defensa en profundidad:
   * Manejo de errores que NO filtra stack traces
   * Logs estructurados
 """
+=======
+from dotenv import load_dotenv
+load_dotenv()
+
+>>>>>>> 7707e8dfb718541eb4a2122ac6fac4edccd3c605:backend/src/app.py
 import logging
 from flask import Flask, jsonify
 from flask_cors import CORS
