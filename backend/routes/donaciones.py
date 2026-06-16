@@ -10,6 +10,7 @@ IMPORTANTE para el informe:
 """
 import hashlib
 import secrets
+from datetime import datetime, timezone
 from flask import Blueprint, request, jsonify, g
 from pydantic import ValidationError
 
@@ -41,6 +42,7 @@ def donar():
         "moneda":          data.moneda,
         "estado":          "completada",     # demo: siempre OK
         "referencia_pago": ref,
+        "fecha":           datetime.now(timezone.utc).isoformat(),
     }).execute()
 
     return jsonify(ok=True,
