@@ -32,7 +32,7 @@ def donar():
     # tokenizar: nunca tocamos card_number/cvv después de esta línea
     nonce = secrets.token_hex(8)
     last4 = data.card_number[-4:]
-    ref = hashlib.sha256(f"{nonce}|{last4}".encode()).hexdigest()[:24]
+    ref = hashlib.sha256(f"{nonce}|{last4}".encode()).hexdigest()[:40]
 
     sb = client_service()
     ins = sb.table("donaciones").insert({
@@ -40,7 +40,7 @@ def donar():
         "id_organizacion": data.id_organizacion,
         "monto":           data.monto,
         "moneda":          data.moneda,
-        "estado":          "completada",     # demo: siempre OK
+        "estado":          "pendiente",
         "referencia_pago": ref,
         "fecha":           datetime.now(timezone.utc).isoformat(),
     }).execute()
