@@ -1,4 +1,6 @@
 """
+TIPOS DE API'S:
+
 /api/organizaciones        GET  : lista pública (solo activas)
 /api/organizaciones        POST : organización autenticada crea la suya
 /api/mi-organizacion       GET  : la org del usuario actual
