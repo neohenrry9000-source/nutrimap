@@ -5,11 +5,12 @@ IMPORTANTE para el informe:
   * Esto NO procesa pagos reales.
   * NUNCA persistimos el PAN ni el CVV (cumplimiento PCI-DSS).
   * Solo guardamos un identificador derivado (`referencia_pago`) que es
-    el SHA-256 truncado de un nonce + últimos 4 dígitos. Permite trazar
-    la donación sin almacenar datos sensibles.
+    el SHA-256 truncado de un nonce + últimos 4 dígitos. Permite trazar la 
+    donación sin almacenar datos sensibles.
 """
 import hashlib
 import secrets
+from datetime import datetime, timezone
 from flask import Blueprint, request, jsonify, g
 from pydantic import ValidationError
 
@@ -41,6 +42,7 @@ def donar():
         "moneda":          data.moneda,
         "estado":          "completada",     # demo: siempre OK
         "referencia_pago": ref,
+        "fecha":           datetime.now(timezone.utc).isoformat(),
     }).execute()
 
     return jsonify(ok=True,
