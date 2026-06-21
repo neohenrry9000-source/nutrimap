@@ -1,4 +1,6 @@
 """
+MAPA DE LA API:
+
 /api/mapa — devuelve el JSON del mapa de riesgo + organizaciones por
 distrito. Lectura pública (los datos son agregados oficiales).
 

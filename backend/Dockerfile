@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 5000
 
 # Comando para arrancar la aplicación
-CMD ["python", "app.py"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "1", "--timeout", "120", "app:app" ]

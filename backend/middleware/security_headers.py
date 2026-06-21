@@ -10,7 +10,8 @@ def register_security_headers(app):
         # No filtres referrer
         resp.headers["Referrer-Policy"] = "no-referrer"
         # Política mínima de permisos del navegador
-        resp.headers["Permissions-Policy"] = "geolocation=(), camera=(), microphone=()"
+        resp.headers["Permissions-Policy"] = "geolocation=(), camera=(), microphone=(), payment=()"
+        # Payment: El navegador también tiene bloqueado el acceso a la API de pagos del navegador (Apple Pay/Google Pay) 
         # CSP: la API solo devuelve JSON, así que prohibimos todo lo
         # demás. El frontend tiene su propia CSP servida por Nginx/Render.
         resp.headers["Content-Security-Policy"] = (
