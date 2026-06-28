@@ -20,6 +20,8 @@ bp_auth = Blueprint("auth", __name__)
 
 @bp_auth.post("/register")
 def register():
+    limiter = current_app.extensions["limiter"]
+    limiter.limit("3/minute;10/hour")(lambda: None)()
     try:
         data = RegisterIn(**(request.get_json(silent=True) or {}))
     except ValidationError as e:
