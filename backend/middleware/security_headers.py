@@ -1,6 +1,16 @@
 """Encabezados HTTP de seguridad — OWASP Secure Headers."""
+from flask import request, jsonify
 
 def register_security_headers(app):
+    @app.before_request
+    def _csrf_check():
+        if request.method in ("POST", "PUT", "PATCH", "DELETE"):
+            origin = request.headers.get("Origin")
+            if origin:
+                allowed = app.config.get("CORS_ORIGINS", [])
+                if allowed and not any(origin.startswith(o) for o in allowed):
+                    return jsonify(error="forbidden"), 403
+
     @app.after_request
     def _headers(resp):
         # Bloquea framing (clickjacking)
