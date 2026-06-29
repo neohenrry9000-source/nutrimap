@@ -24,8 +24,8 @@ def register():
     limiter.limit("3/minute;10/hour")(lambda: None)()
     try:
         data = RegisterIn(**(request.get_json(silent=True) or {}))
-    except ValidationError as e:
-        return jsonify(error="validation", detail=e.errors()), 400
+    except ValidationError:
+        return jsonify(error="validation", detail="Datos inválidos"), 400
 
     sb = client_service()
     exists = sb.table("usuarios").select("id").eq("email", data.email).execute()
