@@ -28,6 +28,7 @@ jobs:
     name: Backend — lint + test + SAST
     runs-on: ubuntu-latest
     steps:
+ feature/diego-frontend-mejoras
     - uses: actions/checkout@v4
     - uses: actions/setup-python@v5
       with:
@@ -47,6 +48,27 @@ jobs:
     - name: Tests
       working-directory: backend
       run: pytest -q || echo "No tests yet"
+
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Instalar deps
+        working-directory: backend
+        run: |
+          pip install -r requirements.txt
+          pip install ruff bandit pytest
+      - name: Lint (ruff)
+        working-directory: backend
+        run: ruff check .
+      - name: SAST (bandit)
+        working-directory: backend
+        run: bandit -r . -x tests -ll
+      - name: Tests
+        working-directory: backend
+        run: pytest -q || echo "No tests yet"
+ develop
 
   # ------------------------------------------------------------
   frontend:

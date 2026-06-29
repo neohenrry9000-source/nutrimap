@@ -3,25 +3,19 @@
 // que se invalide al cerrar pestaña (mejor postura para una demo).
 const BASE = import.meta.env.VITE_API_URL || "/api";
 
-function getToken()    { return sessionStorage.getItem("nm_token"); }
-export function setToken(t) {
-  if (t) sessionStorage.setItem("nm_token", t);
-  else   sessionStorage.removeItem("nm_token");
-}
 export function getRol() { return sessionStorage.getItem("nm_rol"); }
 export function setRol(r) {
   if (r) sessionStorage.setItem("nm_rol", r);
   else   sessionStorage.removeItem("nm_rol");
 }
 
-async function req(path, { method = "GET", body, auth = true } = {}) {
+async function req(path, { method = "GET", body } = {}) {
   const headers = { "Content-Type": "application/json" };
-  const tk = getToken();
-  if (auth && tk) headers.Authorization = `Bearer ${tk}`;
 
   const r = await fetch(`${BASE}${path}`, {
     method,
     headers,
+    credentials: "include",
     body: body ? JSON.stringify(body) : undefined,
   });
   const data = await r.json().catch(() => ({}));
