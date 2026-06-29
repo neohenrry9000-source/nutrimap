@@ -26,8 +26,8 @@ bp_don = Blueprint("don", __name__)
 def donar():
     try:
         data = DonarIn(**(request.get_json(silent=True) or {}))
-    except ValidationError as e:
-        return jsonify(error="validation", detail=e.errors()), 400
+    except ValidationError:
+        return jsonify(error="validation", detail="Datos inválidos"), 400
 
     # tokenizar: nunca tocamos card_number/cvv después de esta línea
     nonce = secrets.token_hex(8)
