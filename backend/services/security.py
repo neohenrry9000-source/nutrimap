@@ -51,10 +51,14 @@ def decode_jwt(token: str) -> dict | None:
 def require_auth(fn):
     @functools.wraps(fn)
     def wrapper(*a, **kw):
-        auth = request.headers.get("Authorization", "")
-        if not auth.startswith("Bearer "):
+        token = request.cookies.get("nm_token")
+        if not token:
+            auth = request.headers.get("Authorization", "")
+            if auth.startswith("Bearer "):
+                token = auth[7:]
+        if not token:
             return jsonify(error="unauthorized"), 401
-        payload = decode_jwt(auth[7:])
+        payload = decode_jwt(token)
         if not payload:
             return jsonify(error="unauthorized"), 401
         g.user = payload
