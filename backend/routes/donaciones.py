@@ -11,7 +11,7 @@ IMPORTANTE para el informe:
 import hashlib
 import secrets
 from datetime import datetime, timezone
-from flask import Blueprint, request, jsonify, g
+from flask import Blueprint, request, jsonify, g, current_app
 from pydantic import ValidationError
 
 from services.security        import require_role
@@ -24,6 +24,8 @@ bp_don = Blueprint("don", __name__)
 @bp_don.post("/donar")
 @require_role("donador", "admin")
 def donar():
+    limiter = current_app.extensions["limiter"]
+    limiter.limit("7/hour")(lambda: None)()
     try:
         data = DonarIn(**(request.get_json(silent=True) or {}))
     except ValidationError:
