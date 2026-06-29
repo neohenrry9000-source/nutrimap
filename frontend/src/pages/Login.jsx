@@ -19,10 +19,10 @@ export default function Login() {
       if (mode === "register") {
         await api.register(form);
       }
-      const { token, rol } = await api.login({
+      const { rol } = await api.login({
         email: form.email, password: form.password
       });
-      login(token, rol);
+      login(rol);
       window.location.href = "/";	
     } catch (err) {
       setState({ loading: false,

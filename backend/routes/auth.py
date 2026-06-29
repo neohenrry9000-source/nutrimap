@@ -69,4 +69,13 @@ def login():
         return jsonify(error="invalid_credentials"), 401
 
     u = row.data[0]
-    return jsonify(token=issue_jwt(u["id"], u["rol"]), rol=u["rol"])
+    resp = jsonify(ok=True, rol=u["rol"])
+    resp.set_cookie(
+        "nm_token",
+        issue_jwt(u["id"], u["rol"]),
+        httponly=True,
+        secure=not current_app.config.get("DEBUG"),
+        samesite="Lax",
+        max_age=7200,
+    )
+    return resp
