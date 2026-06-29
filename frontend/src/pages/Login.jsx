@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../services/api.js";
 import { useAuth } from "../hooks/useAuth.js";
+import ApiStatus from "../components/ApiStatus.jsx";
 
 export default function Login() {
   const [mode, setMode] = useState("login"); // 'login' | 'register'
@@ -39,6 +40,11 @@ export default function Login() {
         <h1 className="text-2xl font-bold text-slate-800">NutriMap</h1>
         <p className="text-sm text-slate-500 mb-6">
           Mapa de riesgo nutricional infantil del Perú
+        </p>
+        <ApiStatus />
+
+        <p className="mt-3 mb-6 text-xs leading-relaxed text-slate-500">
+          Plataforma web para visualizar riesgo nutricional infantil, cobertura de apoyo alimentario y datos por zonas del Perú.
         </p>
 
         <div className="flex bg-slate-100 rounded p-1 mb-5">
