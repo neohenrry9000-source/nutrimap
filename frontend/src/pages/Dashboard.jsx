@@ -7,6 +7,8 @@ import { api } from "../services/api.js";
 import { useAuth } from "../hooks/useAuth.js";
 import { getAnemiaPct, getCasosAnemia, getCoberturaComedor, getTotalNinos, riskFromAnemia } from "../utils/riskRules.js";
 import { getUbigeoReference } from "../utils/ubigeoReferencial.js";
+import EmptyState from "../components/EmptyState.jsx";
+import DashboardGuide from "../components/DashboardGuide.jsx";
 
 function normalize(value = "") {
   return String(value)
@@ -130,6 +132,8 @@ export default function Dashboard() {
         </div>
       </header>
 
+      <DashboardGuide />
+
       <main className="flex-1 flex overflow-hidden">
         <div className="flex-1 flex flex-col overflow-hidden">
           {status === "ok" && (
@@ -157,7 +161,18 @@ export default function Dashboard() {
                 </div>
               </div>
             )}
-            {status === "ok" && <PeruGeoMap distritos={filteredDistritos} onSelect={setSel} />}
+            {status === "ok" && filteredDistritos.length === 0 && (
+              <div className="absolute inset-0 z-20 grid place-items-center bg-slate-50/95 p-6">
+               <EmptyState
+                 title="No hay distritos con esos filtros"
+                 message="Cambia el nivel de riesgo, limpia la búsqueda o desactiva el filtro de zonas sin comedor."
+               />
+             </div>
+)}
+
+{status === "ok" && filteredDistritos.length > 0 && (
+  <PeruGeoMap distritos={filteredDistritos} onSelect={setSel} />
+)}
           </div>
         </div>
 
