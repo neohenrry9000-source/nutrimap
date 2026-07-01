@@ -29,7 +29,7 @@ def create_app() -> Flask:
     # --- CORS: solo orígenes explícitos, credenciales en header Authorization
     CORS(app,
          origins=app.config["CORS_ORIGINS"],
-         supports_credentials=False,
+         supports_credentials=True,
          allow_headers=["Content-Type", "Authorization"],
          methods=["GET", "POST", "PUT", "OPTIONS"])
 

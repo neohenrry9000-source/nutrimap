@@ -11,7 +11,7 @@ IMPORTANTE para el informe:
 import hashlib
 import secrets
 from datetime import datetime, timezone
-from flask import Blueprint, request, jsonify, g
+from flask import Blueprint, request, jsonify, g, current_app
 from pydantic import ValidationError
 
 from services.security        import require_role
@@ -24,10 +24,12 @@ bp_don = Blueprint("don", __name__)
 @bp_don.post("/donar")
 @require_role("donador", "admin")
 def donar():
+    limiter = current_app.extensions["limiter"]
+    limiter.limit("7/hour")(lambda: None)()
     try:
         data = DonarIn(**(request.get_json(silent=True) or {}))
-    except ValidationError as e:
-        return jsonify(error="validation", detail=e.errors()), 400
+    except ValidationError:
+        return jsonify(error="validation", detail="Datos inválidos"), 400
 
     # tokenizar: nunca tocamos card_number/cvv después de esta línea
     nonce = secrets.token_hex(8)
