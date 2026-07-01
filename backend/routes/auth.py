@@ -20,10 +20,12 @@ bp_auth = Blueprint("auth", __name__)
 
 @bp_auth.post("/register")
 def register():
+    limiter = current_app.extensions["limiter"]
+    limiter.limit("3/minute;10/hour")(lambda: None)()
     try:
         data = RegisterIn(**(request.get_json(silent=True) or {}))
-    except ValidationError as e:
-        return jsonify(error="validation", detail=e.errors()), 400
+    except ValidationError:
+        return jsonify(error="validation", detail="Datos inválidos"), 400
 
     sb = client_service()
     exists = sb.table("usuarios").select("id").eq("email", data.email).execute()
@@ -67,4 +69,13 @@ def login():
         return jsonify(error="invalid_credentials"), 401
 
     u = row.data[0]
-    return jsonify(token=issue_jwt(u["id"], u["rol"]), rol=u["rol"])
+    resp = jsonify(ok=True, rol=u["rol"])
+    resp.set_cookie(
+        "nm_token",
+        issue_jwt(u["id"], u["rol"]),
+        httponly=True,
+        secure=not current_app.config.get("DEBUG"),
+        samesite="Lax",
+        max_age=7200,
+    )
+    return resp

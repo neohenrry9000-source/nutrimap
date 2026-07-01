@@ -1,6 +1,16 @@
 """Encabezados HTTP de seguridad — OWASP Secure Headers."""
+from flask import request, jsonify
 
 def register_security_headers(app):
+    @app.before_request
+    def _csrf_check():
+        if request.method in ("POST", "PUT", "PATCH", "DELETE"):
+            origin = request.headers.get("Origin")
+            if origin:
+                allowed = app.config.get("CORS_ORIGINS", [])
+                if allowed and not any(origin.startswith(o) for o in allowed):
+                    return jsonify(error="forbidden"), 403
+
     @app.after_request
     def _headers(resp):
         # Bloquea framing (clickjacking)
@@ -13,6 +23,6 @@ def register_security_headers(app):
         resp.headers["Permissions-Policy"] = "geolocation=(), camera=(), microphone=(), payment=()"
         # Payment: El navegador también tiene bloqueado el acceso a la API de pagos del navegador (Apple Pay/Google Pay)
         # HSTS: solo cuando se sirve por HTTPS (Render lo hace)
-        if app.config.get("FLASK_ENV") == "production":
+        if not app.config.get("DEBUG"):
             resp.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
         return resp
