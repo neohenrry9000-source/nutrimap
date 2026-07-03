@@ -7,7 +7,7 @@ function LoginPage() {
   const [form, setForm]     = useState({ email: '', password: '' })
   const [error, setError]   = useState('')
   const [loading, setLoading] = useState(false)
-  const { loginUser }       = useAuth()
+  const { login: loginUser } = useAuth()
   const navigate            = useNavigate()
 
   const handleSubmit = async (e) => {
