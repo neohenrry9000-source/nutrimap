@@ -16,6 +16,7 @@ function LoginPage() {
     setError('')
     try {
       const res = await login(form)
+      console.log("Datos recibidos del backend:", res)
       loginUser(res.data.token, res.data.rol)
       navigate('/')
     } catch {
