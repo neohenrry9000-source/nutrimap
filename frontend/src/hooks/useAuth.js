@@ -1,15 +1,17 @@
-import { useState, useCallback } from "react";
-import { setRol, getRol } from "../services/api.js";
+import { useState, useEffect, useCallback } from "react";
+import { setToken, setRol, getRol } from "../services/api.js";
 
 export function useAuth() {
-  const [rol, setR] = useState(() => getRol());
+  // Aquí recuperamos las variables que la IA te había borrado:
+  const [token, setTk] = useState(() => sessionStorage.getItem("nm_token"));
+  const [rol, setR]    = useState(() => getRol());
 
-  const login = useCallback((r) => {
-    setRol(r); setR(r);
+  const login = useCallback((tk, r) => {
+    setToken(tk); setRol(r); setTk(tk); setR(r);
   }, []);
   
   const logout = useCallback(() => {
-    setRol(null); setR(null);
+    setToken(null); setRol(null); setTk(null); setR(null);
   }, []);
 
   useEffect(() => {
