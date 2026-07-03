@@ -9,6 +9,11 @@ export function setRol(r) {
   else   sessionStorage.removeItem("nm_rol");
 }
 
+export function setToken(tk) {
+  if (tk) sessionStorage.setItem("nm_token", tk);
+  else    sessionStorage.removeItem("nm_token");
+}
+
 async function req(path, { method = "GET", body } = {}) {
   const headers = { "Content-Type": "application/json" };
 
