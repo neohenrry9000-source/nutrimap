@@ -16,10 +16,14 @@ function LoginPage() {
     setError('')
     try {
       const res = await login(form)
+      
       console.log("Datos recibidos del backend:", res)
-      loginUser(res.data.token, res.data.rol)
+      const { login: loginUser } = useAuth() // El alias clave
+      loginUser(res.token, res.rol) 
+      
       navigate('/')
-    } catch {
+    } catch (err) {
+      console.error("Error capturado:", err)
       setError('Credenciales incorrectas')
     } finally {
       setLoading(false)
