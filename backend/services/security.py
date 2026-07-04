@@ -76,3 +76,27 @@ def require_role(*roles):
             return fn(*a, **kw)
         return wrapper
     return deco
+
+
+def require_cuenta_activa(fn):
+    """Bloquea escrituras críticas de cuentas suspendidas o baneadas.
+
+    Se aplica DEBAJO de require_auth/require_role (necesita g.user). El
+    estado vive en BD (el JWT es stateless): una suspensión surte efecto
+    en la siguiente request, sin esperar a que expire el token.
+    Compatibilidad: si la columna estado aún no existe, se asume activo.
+    """
+    @functools.wraps(fn)
+    def wrapper(*a, **kw):
+        from services.supabase_client import client_service
+        row = (client_service().table("usuarios").select("*")
+               .eq("id", g.user["sub"]).limit(1).execute())
+        estado = (row.data[0].get("estado") if row.data else None) or "activo"
+        if estado == "baneado":
+            return jsonify(error="cuenta_bloqueada",
+                           detail="Tu cuenta fue bloqueada. Contacta al administrador."), 403
+        if estado == "suspendido":
+            return jsonify(error="cuenta_suspendida",
+                           detail="Tu cuenta está suspendida temporalmente: puedes ver tu historial pero no realizar esta acción."), 403
+        return fn(*a, **kw)
+    return wrapper

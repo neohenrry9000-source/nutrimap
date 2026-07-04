@@ -25,6 +25,10 @@ class BaseConfig:
     RATELIMIT_DEFAULT     = "200 per hour"
     RATELIMIT_STORAGE_URI = os.environ.get("RATELIMIT_STORAGE_URI", "memory://")
 
+    # Yape (datos de cobro que se muestran al donante; no son secretos)
+    YAPE_NUMERO  = os.environ.get("YAPE_NUMERO", "987 654 321")
+    YAPE_TITULAR = os.environ.get("YAPE_TITULAR", "NutriMap Solidario")
+
 
 class DevConfig(BaseConfig):
     DEBUG  = True

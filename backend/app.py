@@ -8,18 +8,31 @@ Defensa en profundidad:
   * Manejo de errores que NO filtra stack traces
   * Logs estructurados
 """
+import os
 import logging
 from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
-from config import get_config
+
 from middleware.security_headers import register_security_headers
 from routes.auth          import bp_auth
 from routes.organizaciones import bp_org
 from routes.donaciones    import bp_don
 from routes.mapa          import bp_mapa
+from routes.admin         import bp_admin
+
+
+
+
+from dotenv import load_dotenv
+
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+load_dotenv(os.path.join(BASE_DIR, ".env"))
+from config import get_config
+
+
 
 
 def create_app() -> Flask:
@@ -31,7 +44,7 @@ def create_app() -> Flask:
          origins=app.config["CORS_ORIGINS"],
          supports_credentials=True,
          allow_headers=["Content-Type", "Authorization"],
-         methods=["GET", "POST", "PUT", "OPTIONS"])
+         methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
 
     # --- Rate limiter global (memoria en demo; Redis en prod)
     limiter = Limiter(get_remote_address, app=app,
@@ -51,6 +64,7 @@ def create_app() -> Flask:
     app.register_blueprint(bp_org,   url_prefix="/api")
     app.register_blueprint(bp_don,   url_prefix="/api")
     app.register_blueprint(bp_mapa,  url_prefix="/api")
+    app.register_blueprint(bp_admin, url_prefix="/api")
 
     # --- Health
     @app.get("/api/health")
@@ -75,7 +89,7 @@ def create_app() -> Flask:
     return app
 
 
-# gunicorn -w 2 -b 0.0.0.0:8000 app:app
+# Producción: gunicorn --bind 0.0.0.0:$PORT --workers 2 app:app
 app = create_app()
 
 if __name__ == "__main__":

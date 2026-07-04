@@ -13,8 +13,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copiar todo el resto del código del backend al contenedor
 COPY . .
 
-# Exponer el puerto (por defecto Flask usa 5000)
-EXPOSE 5000
+# Exponer el puerto por defecto (Render inyecta PORT en runtime)
+EXPOSE 8080
 
-# Comando para arrancar la aplicación
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "1", "--timeout", "120", "app:app" ]
+# Forma shell para expandir $PORT (Render lo define; local usa 8080)
+CMD gunicorn --bind 0.0.0.0:${PORT:-8080} --workers 2 --timeout 120 app:app

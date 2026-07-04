@@ -6,3 +6,4 @@ PyJWT==2.9.0
 pydantic[email]==2.8.2
 supabase==2.6.0
 gunicorn==22.0.0
+python-dotenv==1.0.1
