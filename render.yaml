@@ -1,0 +1,63 @@
+# ============================================================
+# Blueprint de Render para NutriMap
+# Rama de despliegue: jeiner-gutierrez-v2 (cada merge a esa rama
+# dispara el deploy automático de ambos servicios).
+#
+# Dos formas de usarlo:
+#  A) Render Dashboard -> New -> Blueprint -> apuntar a este repo
+#     (lee este archivo y crea/actualiza ambos servicios), o
+#  B) Ignorar este archivo y configurar cada servicio a mano en el
+#     dashboard con exactamente estos valores (Branch, Root Directory,
+#     Build/Start Command y variables).
+#
+# Los valores marcados sync:false se cargan a mano en el dashboard
+# (son secretos: NUNCA van en el repo).
+# ============================================================
+services:
+  # ---------------- Backend (Flask + gunicorn) ----------------
+  - type: web
+    name: nutrimap-backend
+    runtime: python
+    branch: jeiner-gutierrez-v2
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 app:app
+    healthCheckPath: /api/health
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: FLASK_SECRET_KEY
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_KEY
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false          # URL exacta del frontend, ej. https://nutrimap-frontend.onrender.com
+
+  # ---------------- Frontend (Vite build estático) ----------------
+  - type: web
+    name: nutrimap-frontend
+    runtime: static
+    branch: jeiner-gutierrez-v2
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    # SPA: cualquier ruta (/panel, /admin) debe servir index.html
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        sync: false          # ej. https://nutrimap-backend.onrender.com/api
+      - key: VITE_SUPABASE_URL
+        sync: false          # opcional: feed en tiempo real
+      - key: VITE_SUPABASE_ANON_KEY
+        sync: false          # opcional (SOLO la anon key)

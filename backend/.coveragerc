@@ -1,0 +1,17 @@
+# Cobertura del backend NutriMap. Meta del proyecto: >= 80%.
+[run]
+source = .
+omit =
+    tests/*
+    .venv/*
+    venv/*
+
+[report]
+show_missing = True
+precision = 1
+exclude_lines =
+    pragma: no cover
+    if __name__ == .__main__.:
+
+[html]
+directory = htmlcov

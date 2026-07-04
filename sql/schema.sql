@@ -48,8 +48,13 @@ create table if not exists public.organizaciones (
   updated_at       timestamptz not null default now()
 );
 create index if not exists idx_org_ubigeo   on public.organizaciones(ubigeo);
-create index if not exists idx_org_user     on public.organizaciones(user_id);
 create index if not exists idx_org_activa   on public.organizaciones(activa);
+-- Registro único: una organización por usuario (el backend devuelve
+-- 409; el índice cierra la condición de carrera).
+create unique index if not exists uq_org_user on public.organizaciones(user_id);
+-- Anti-duplicados: mismo nombre (case-insensitive) en el mismo distrito.
+create unique index if not exists uq_org_nombre_ubigeo
+  on public.organizaciones (lower(nombre), ubigeo);
 
 -- ---------- 3. DONACIONES ------------------------------------
 create type estado_donacion as enum ('pendiente', 'completada', 'fallida');
@@ -66,6 +71,7 @@ create table if not exists public.donaciones (
 );
 create index if not exists idx_don_donante  on public.donaciones(id_donante);
 create index if not exists idx_don_org      on public.donaciones(id_organizacion);
+create index if not exists idx_don_fecha    on public.donaciones(fecha desc);
 
 -- ---------- 4. MAPA DE RIESGO --------------------------------
 create type nivel_riesgo_t as enum ('BAJO','MEDIO','ALTO','MUY_ALTO','SIN_DATOS');
@@ -86,6 +92,7 @@ create table if not exists public.mapa_riesgo (
   lng                       double precision,
   fuente                    text not null default 'ENDES 2024 / INEI',
   periodo                   text not null default '2024',
+  observacion_calidad_dato  text,
   updated_at                timestamptz not null default now()
 );
 create index if not exists idx_mapa_nivel on public.mapa_riesgo(nivel_riesgo);
@@ -123,10 +130,15 @@ alter table public.organizaciones   enable row level security;
 alter table public.donaciones       enable row level security;
 alter table public.mapa_riesgo      enable row level security;
 alter table public.auditoria_eventos enable row level security;
+-- Sin políticas: intentos_login solo es accesible con la service key
+-- (backend). Si no se activa RLS, la anon key la lee vía PostgREST.
+alter table public.intentos_login   enable row level security;
 
 -- Helper: ¿el usuario actual es admin?
+-- SECURITY DEFINER: evita recursión infinita (la política de usuarios
+-- llama a is_admin, que lee usuarios, que re-evalúa la política...).
 create or replace function public.is_admin() returns boolean
-language sql stable as $$
+language sql stable security definer set search_path = public as $$
   select exists(
     select 1 from public.usuarios
     where id = auth.uid() and rol = 'admin'

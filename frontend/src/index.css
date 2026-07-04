@@ -4,3 +4,62 @@
 
 html, body, #root { height: 100%; }
 .leaflet-container { height: 100%; width: 100%; }
+
+/* Tema: el toggle pone/quita .dark en <html>; color-scheme mejora
+   scrollbars y controles nativos en cada tema. */
+html { color-scheme: light; }
+html.dark { color-scheme: dark; }
+html.dark body { background-color: #0f172a; }
+
+/* Tooltips de Leaflet coherentes con el tema oscuro */
+html.dark .leaflet-tooltip {
+  background: #1e293b;
+  border-color: #334155;
+  color: #e2e8f0;
+}
+html.dark .leaflet-tooltip-top:before { border-top-color: #334155; }
+
+/* Skeleton loader */
+.nm-skeleton {
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 37%, #e2e8f0 63%);
+  background-size: 400px 100%;
+}
+html.dark .nm-skeleton {
+  background: linear-gradient(90deg, #1e293b 25%, #334155 37%, #1e293b 63%);
+  background-size: 400px 100%;
+}
+
+/* ------------------------------------------------------------------ */
+/* Motion system — sutil, rápido, con aterrizaje suave (ease-out-expo) */
+/* ------------------------------------------------------------------ */
+
+/* Cambio de tema sin parpadeo: las superficies interpolan su color */
+body, header, aside, section, main, table, input, select, textarea {
+  transition: background-color .25s ease, border-color .25s ease;
+}
+
+/* Lift de tarjetas: elevación mínima + sombra, nunca "saltos" */
+.nm-lift {
+  transition: transform .2s cubic-bezier(.16,1,.3,1), box-shadow .2s ease;
+}
+.nm-lift:hover { transform: translateY(-2px); }
+
+/* Micro-feedback en botones de acción */
+.nm-press { transition: transform .12s ease; }
+.nm-press:active { transform: scale(.97); }
+
+/* Anillo de foco accesible y consistente */
+:focus-visible {
+  outline: 2px solid #10b981;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Accesibilidad: si el usuario pide menos movimiento, se respeta */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
