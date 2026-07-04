@@ -75,7 +75,7 @@ def login():
         issue_jwt(u["id"], u["rol"]),
         httponly=True,
         secure=not current_app.config.get("DEBUG"),
-        samesite="Lax",
+        samesite="None",
         max_age=7200,
     )
     return resp

@@ -24,7 +24,7 @@ export default function Login() {
         email: form.email, password: form.password
       });
       login(rol);
-      window.location.href = "/";	
+      nav("/");
     } catch (err) {
       setState({ loading: false,
                  err: err.status === 401 ? "Credenciales inválidas"
