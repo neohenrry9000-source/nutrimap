@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <script type="module">import { injectIntoGlobalHook } from "/@react-refresh";
+injectIntoGlobalHook(window);
+window.$RefreshReg$ = () => {};
+window.$RefreshSig$ = () => (type) => type;</script>
+
+    <script type="module" src="/@vite/client"></script>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <!-- CSP del frontend. tile.openstreetmap.org es el proveedor de tiles
+         del mapa Leaflet. Si despliegas en otro dominio, ajusta connect-src. -->
+    <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self';
+      img-src 'self' data: https://*.tile.openstreetmap.org https://*.basemaps.cartocdn.com;
+      style-src 'self' 'unsafe-inline' https://unpkg.com;
+      script-src 'self';
+      connect-src 'self' http://localhost:8000 https://*.supabase.co https://nutrimap-dev.onrender.com https://nutrimap-prod.onrender.com;
+      font-src 'self' data:;
+      object-src 'none';
+      base-uri 'none';
+    " />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+    <title>NutriMap — Riesgo Nutricional Perú</title>
+  </head>
+  <body class="bg-slate-50 text-slate-800">
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx?t=1783134123837"></script>
+  </body>
+</html>

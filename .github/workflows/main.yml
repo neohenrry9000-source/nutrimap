@@ -47,7 +47,6 @@ jobs:
     - name: Tests
       working-directory: backend
       run: pytest -q || echo "No tests yet"
-      
   # ------------------------------------------------------------
   frontend:
     name: Frontend — build
