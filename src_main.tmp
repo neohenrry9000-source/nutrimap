@@ -1,0 +1,34 @@
+import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=16a6e19b"; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+import __vite__cjsImport1_react from "/node_modules/.vite/deps/react.js?v=16a6e19b"; const React = __vite__cjsImport1_react.__esModule ? __vite__cjsImport1_react.default : __vite__cjsImport1_react;
+import __vite__cjsImport2_reactDom_client from "/node_modules/.vite/deps/react-dom_client.js?v=16a6e19b"; const createRoot = __vite__cjsImport2_reactDom_client["createRoot"];
+import { BrowserRouter } from "/node_modules/.vite/deps/react-router-dom.js?v=16a6e19b";
+import App from "/src/App.jsx?t=1783134123837";
+import "/src/index.css?t=1783134123837";
+import { AuthProvider } from "/src/hooks/useAuth.js?t=1783132903870";
+createRoot(document.getElementById("root")).render(
+  /* @__PURE__ */ jsxDEV(React.StrictMode, { children: /* @__PURE__ */ jsxDEV(AuthProvider, { children: [
+    " ",
+    /* @__PURE__ */ jsxDEV(BrowserRouter, { children: [
+      " ",
+      /* @__PURE__ */ jsxDEV(App, {}, void 0, false, {
+        fileName: "C:/Users/Henrry/OneDrive/Documents/GitHub/nutrimap/frontend/src/main.jsx",
+        lineNumber: 13,
+        columnNumber: 9
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Users/Henrry/OneDrive/Documents/GitHub/nutrimap/frontend/src/main.jsx",
+      lineNumber: 12,
+      columnNumber: 7
+    }, this)
+  ] }, void 0, true, {
+    fileName: "C:/Users/Henrry/OneDrive/Documents/GitHub/nutrimap/frontend/src/main.jsx",
+    lineNumber: 11,
+    columnNumber: 5
+  }, this) }, void 0, false, {
+    fileName: "C:/Users/Henrry/OneDrive/Documents/GitHub/nutrimap/frontend/src/main.jsx",
+    lineNumber: 10,
+    columnNumber: 3
+  }, this)
+);
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJtYXBwaW5ncyI6IkFBWVE7QUFaUixPQUFPQSxXQUFXO0FBQ2xCLFNBQVNDLGtCQUFrQjtBQUMzQixTQUFTQyxxQkFBcUI7QUFDOUIsT0FBT0MsU0FBUztBQUNoQixPQUFPO0FBRVAsU0FBU0Msb0JBQW9CO0FBRTdCSCxXQUFXSSxTQUFTQyxlQUFlLE1BQU0sQ0FBQyxFQUFFQztBQUFBQSxFQUMxQyx1QkFBQyxNQUFNLFlBQU4sRUFDQyxpQ0FBQyxnQkFBYTtBQUFBO0FBQUEsSUFDWix1QkFBQyxpQkFBYztBQUFBO0FBQUEsTUFDYix1QkFBQyxTQUFEO0FBQUE7QUFBQTtBQUFBO0FBQUEsYUFBSTtBQUFBLFNBRE47QUFBQTtBQUFBO0FBQUE7QUFBQSxXQUVBO0FBQUEsT0FIRjtBQUFBO0FBQUE7QUFBQTtBQUFBLFNBSUEsS0FMRjtBQUFBO0FBQUE7QUFBQTtBQUFBLFNBTUE7QUFDRiIsIm5hbWVzIjpbIlJlYWN0IiwiY3JlYXRlUm9vdCIsIkJyb3dzZXJSb3V0ZXIiLCJBcHAiLCJBdXRoUHJvdmlkZXIiLCJkb2N1bWVudCIsImdldEVsZW1lbnRCeUlkIiwicmVuZGVyIl0sImlnbm9yZUxpc3QiOltdLCJzb3VyY2VzIjpbIm1haW4uanN4Il0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBSZWFjdCBmcm9tIFwicmVhY3RcIjtcclxuaW1wb3J0IHsgY3JlYXRlUm9vdCB9IGZyb20gXCJyZWFjdC1kb20vY2xpZW50XCI7XHJcbmltcG9ydCB7IEJyb3dzZXJSb3V0ZXIgfSBmcm9tIFwicmVhY3Qtcm91dGVyLWRvbVwiO1xyXG5pbXBvcnQgQXBwIGZyb20gXCIuL0FwcC5qc3hcIjtcclxuaW1wb3J0IFwiLi9pbmRleC5jc3NcIjtcclxuLy8gMS4gSW1wb3J0YW1vcyBlbCBQcm92aWRlciBxdWUgYWNhYmFtb3MgZGUgY3JlYXJcclxuaW1wb3J0IHsgQXV0aFByb3ZpZGVyIH0gZnJvbSBcIi4vaG9va3MvdXNlQXV0aC5qc1wiOyBcclxuXHJcbmNyZWF0ZVJvb3QoZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoXCJyb290XCIpKS5yZW5kZXIoXHJcbiAgPFJlYWN0LlN0cmljdE1vZGU+XHJcbiAgICA8QXV0aFByb3ZpZGVyPiB7LyogMS4gRWwgUHJvdmVlZG9yIGRlIEVzdGFkbyB2YSBwcmltZXJvICovfVxyXG4gICAgICA8QnJvd3NlclJvdXRlcj4gey8qIDIuIEx1ZWdvIGVsIFJvdXRlciAqL31cclxuICAgICAgICA8QXBwIC8+XHJcbiAgICAgIDwvQnJvd3NlclJvdXRlcj5cclxuICAgIDwvQXV0aFByb3ZpZGVyPlxyXG4gIDwvUmVhY3QuU3RyaWN0TW9kZT5cclxuKTsiXSwiZmlsZSI6IkM6L1VzZXJzL0hlbnJyeS9PbmVEcml2ZS9Eb2N1bWVudHMvR2l0SHViL251dHJpbWFwL2Zyb250ZW5kL3NyYy9tYWluLmpzeCJ9
