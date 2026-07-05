@@ -16,6 +16,11 @@ class RegisterIn(BaseModel):
     rol: Literal["donador", "organizacion"] = "donador"
     nombre: str = Field(default="", max_length=120)
 
+    @field_validator("nombre")
+    @classmethod
+    def _sanitizar_nombre(cls, v: str) -> str:
+        return re.sub(r"[<>\"'&]", "", v)
+
 
 class LoginIn(BaseModel):
     email: EmailStr
