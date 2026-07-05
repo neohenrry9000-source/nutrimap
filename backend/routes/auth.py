@@ -8,6 +8,7 @@ Decisiones:
   * Rate limit estricto en login: 5/min y 30/hora por IP.
   * Registro de cada intento en `intentos_login` (auditoría).
 """
+from datetime import datetime, timezone, timedelta
 from flask import Blueprint, request, jsonify, current_app, g
 from pydantic import ValidationError
 
@@ -62,6 +63,18 @@ def login():
         return jsonify(error="validation"), 400
 
     sb = client_service()
+
+    hace_una_hora = (datetime.now(timezone.utc) - timedelta(hours=1)).isoformat()
+    fallos = (sb.table("intentos_login")
+                .select("id", count="exact")
+                .eq("email", data.email)
+                .eq("exito", False)
+                .gte("created_at", hace_una_hora)
+                .execute())
+    if (fallos.count or 0) >= 10:
+        return jsonify(error="too_many_attempts",
+                       detail="Demasiados intentos fallidos. Intenta en 1 hora."), 429
+
     row = (sb.table("usuarios")
              .select("*")
              .eq("email", data.email)
