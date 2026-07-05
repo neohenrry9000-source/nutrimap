@@ -12,8 +12,16 @@ import os
 import logging
 from flask import Flask, jsonify
 from flask_cors import CORS
+from flask import request as flask_request
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+
+
+def get_real_ip():
+    forwarded = flask_request.headers.get("X-Forwarded-For")
+    if forwarded:
+        return forwarded.split(",")[-1].strip()
+    return get_remote_address()
 
 
 from middleware.security_headers import register_security_headers
@@ -47,7 +55,7 @@ def create_app() -> Flask:
          methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
 
     # --- Rate limiter global (memoria en demo; Redis en prod)
-    limiter = Limiter(get_remote_address, app=app,
+    limiter = Limiter(get_real_ip, app=app,
                       default_limits=[app.config["RATELIMIT_DEFAULT"]],
                       storage_uri=app.config["RATELIMIT_STORAGE_URI"])
     app.extensions["limiter"] = limiter
