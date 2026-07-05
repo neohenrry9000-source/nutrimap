@@ -4,7 +4,7 @@ import base64
 
 from tests import test_data as datos
 
-B64 = base64.b64encode(b"png-falso").decode()
+B64 = base64.b64encode(b"\x89PNG\r\n\x1a\nfake-png-content").decode()
 
 
 def _org_user(db, **kw):
