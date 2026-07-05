@@ -79,3 +79,11 @@ def login():
         max_age=7200,
     )
     return resp
+
+
+@bp_auth.post("/logout")
+def logout():
+    resp = jsonify(ok=True)
+    resp.set_cookie("nm_token", "", httponly=True, secure=not current_app.config.get("DEBUG"),
+                    samesite="Lax", max_age=0)
+    return resp

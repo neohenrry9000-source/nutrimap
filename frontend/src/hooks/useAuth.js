@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { setRol, getRol } from "../services/api.js";
+import { setRol, getRol, api } from "../services/api.js";
 
 export function useAuth() {
   const [rol, setR] = useState(() => getRol());
@@ -7,7 +7,8 @@ export function useAuth() {
   const login = useCallback((r) => {
     setRol(r); setR(r);
   }, []);
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
+    await api.logout().catch(() => {});
     setRol(null); setR(null);
   }, []);
 

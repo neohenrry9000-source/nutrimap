@@ -35,5 +35,6 @@ export const api = {
   orgs:     (ub)=> req(`/organizaciones${ub ? `?ubigeo=${ub}` : ""}`, { auth: false }),
   miOrg:    ()  => req("/mi-organizacion"),
   updMiOrg: (b) => req("/mi-organizacion", { method: "PUT", body: b }),
-  donar:    (b) => req("/donar", { method: "POST", body: b }),
+  donar:    (b) => req("/donar",  { method: "POST", body: b }),
+  logout:   ()  => req("/logout", { method: "POST" }),
 };
