@@ -14,7 +14,10 @@ class BaseConfig:
     JWT_EXP        = timedelta(hours=2)
 
     # CORS
-    CORS_ORIGINS   = os.environ.get("CORS_ORIGINS", "https://nutrimap-prod-frontend.onrender.com").split(",")
+    CORS_ORIGINS = os.environ.get(
+        "CORS_ORIGINS",
+        "http://localhost:5173,https://nutrimap-dev-fronten.onrender.com,https://nutrimap-prod-frontend.onrender.com",
+    ).split(",")
 
     # Supabase
     SUPABASE_URL          = os.environ["SUPABASE_URL"]
@@ -24,6 +27,10 @@ class BaseConfig:
     # Rate limiting (Flask-Limiter)
     RATELIMIT_DEFAULT     = "200 per hour"
     RATELIMIT_STORAGE_URI = os.environ.get("RATELIMIT_STORAGE_URI", "memory://")
+
+    # Yape (datos de cobro que se muestran al donante; no son secretos)
+    YAPE_NUMERO  = os.environ.get("YAPE_NUMERO", "987 654 321")
+    YAPE_TITULAR = os.environ.get("YAPE_TITULAR", "NutriMap Solidario")
 
 
 class DevConfig(BaseConfig):

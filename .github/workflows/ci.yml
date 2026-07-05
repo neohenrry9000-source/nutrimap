@@ -2,20 +2,26 @@ name: NutriMap Secure Pipeline
 
 on:
   push:
-    branches: [ "main", "develop", "feature/*" ]
+    branches: [ "main", "develop", "feature/*", "jeiner-gutierrez-v2" ]
+  pull_request:
+    branches: [ "jeiner-gutierrez-v2", "main" ]
 
 jobs:
   security-and-testing:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4 # Actualizado a v4 para evitar warnings de Node.js
-      - name: Install Tools
-        run: pip install bandit pytest
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: |
+          pip install -r backend/requirements.txt -r backend/requirements-dev.txt bandit
       - name: SAST - Scan Security Domain
-        # Escanea toda la carpeta backend, pero excluye (exclude) los tests
         run: bandit -r backend/ -x backend/tests -ll
-      - name: Run Unit Tests
-        run: pytest backend/tests
+      - name: Run Unit Tests (coverage >= 80%)
+        working-directory: backend
+        run: pytest --cov=. --cov-report=term --cov-fail-under=80
 
   build-docker:
     needs: security-and-testing

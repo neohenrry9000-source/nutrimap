@@ -7,8 +7,10 @@ def register_security_headers(app):
         if request.method in ("POST", "PUT", "PATCH", "DELETE"):
             origin = request.headers.get("Origin")
             if origin:
-                allowed = app.config.get("CORS_ORIGINS", [])
-                if allowed and not any(origin.startswith(o) for o in allowed):
+                allowed = [o.strip().rstrip("/") for o in app.config.get("CORS_ORIGINS", [])]
+                # Comparación exacta: startswith permitiría
+                # https://dominio-permitido.com.evil.com
+                if allowed and origin.rstrip("/") not in allowed:
                     return jsonify(error="forbidden"), 403
 
     @app.after_request

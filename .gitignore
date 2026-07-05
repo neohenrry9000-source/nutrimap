@@ -3,13 +3,24 @@
 venv/
 node_modules/
 
-# Variables de entorno
+# Variables de entorno (cualquier variante, en cualquier carpeta)
 .env
+.env.*
+*.env
+*.env.txt
 backend/.env
 frontend/.env
 .env.local
 .env.development
 .env.production
+# La plantilla sin secretos SÍ se versiona
+!.env.example
+
+# Data cruda ENDES y salidas del pipeline (pesadas; no versionar)
+data/out/
+RECH0_*.csv
+REC44_*.csv
+PS_COMEDOR_*.csv
 
 # Python
 __pycache__/
@@ -17,6 +28,11 @@ __pycache__/
 *.pyo
 *.pyd
 .pytest_cache/
+.coverage
+htmlcov/
+
+# Exportaciones locales de conversaciones/notas
+mi-conversacion*.md
 
 # Flask
 instance/

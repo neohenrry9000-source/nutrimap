@@ -125,6 +125,7 @@ function buildDepartmentSummary(distritos = []) {
       casos_anemia: 0,
       cobertura_count: 0,
       organizaciones: [],
+      comedores: [],
       distritos_priorizados: [],
     });
   }
@@ -168,6 +169,11 @@ function buildDepartmentSummary(distritos = []) {
           departamento: d.departamento,
         });
       }
+    }
+
+    // Oferta social institucional (ENDES) del distrito, si existe
+    if (d.oferta_social) {
+      dep.comedores.push({ ubigeo, ...d.oferta_social });
     }
   }
 
@@ -312,8 +318,9 @@ export default function PeruGeoMap({ distritos = [], onSelect }) {
           <div><b>Riesgo departamental:</b> ${riskLabel(dep?.nivel_riesgo)}</div>
           <div><b>Anemia promedio:</b> ${formatPercent(dep?.porcentaje_anemia)}</div>
           <div><b>Distritos con data:</b> ${formatNumber(dep?.distritos)}</div>
-          <div><b>Organizaciones:</b> ${formatNumber(dep?.organizaciones?.length || 0)}</div>
-          <div style="margin-top: 6px; color: #475569;">Click para ver detalle territorial.</div>
+          <div><b>Organizaciones para donar:</b> ${formatNumber(dep?.organizaciones?.length || 0)}</div>
+          <div><b>Comedores ENDES:</b> ${formatNumber(dep?.comedores?.length || 0)} distritos</div>
+          <div style="margin-top: 6px; color: #475569;">Click para ver detalle territorial y apoyar.</div>
         </div>
       `,
       { sticky: true, direction: "top", opacity: 0.96 }
@@ -332,34 +339,31 @@ export default function PeruGeoMap({ distritos = [], onSelect }) {
   }
 
   return (
-    <div className="relative h-full w-full overflow-hidden bg-[radial-gradient(circle_at_top_left,#e0f2fe_0,#f8fafc_38%,#ecfdf5_100%)]">
-      <div className="absolute left-5 top-5 z-[500] w-[380px] rounded-2xl border border-white/70 bg-white/90 p-4 shadow-lg shadow-slate-200/70 backdrop-blur">
-        <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-emerald-700">Mapa geográfico real</p>
-        <h2 className="mt-1 text-xl font-extrabold text-slate-900">Perú por departamentos</h2>
-        <p className="mt-1 text-xs leading-5 text-slate-600">
-          Color departamental calculado con anemia promedio y cobertura de comedores. Pasa el mouse para indicadores y haz click para ver distritos priorizados.
-        </p>
-        <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
-          <MapKpi label="Distritos filtrados" value={formatNumber(totalDistritos)} />
-          <MapKpi label="Alto / muy alto" value={formatNumber(highOrVeryHigh)} />
-          <MapKpi label="Org. inscritas" value={formatNumber(orgCount)} />
+    <div className="relative h-full w-full overflow-hidden bg-[radial-gradient(circle_at_top_left,#e0f2fe_0,#f8fafc_38%,#ecfdf5_100%)] dark:bg-[radial-gradient(circle_at_top_left,#0c243b_0,#0f172a_38%,#062e26_100%)]">
+      <div className="absolute left-4 top-4 z-[500] hidden w-[290px] rounded-2xl border border-white/70 bg-white/90 p-3 shadow-lg shadow-slate-200/70 backdrop-blur md:block dark:border-slate-700 dark:bg-slate-800/90 dark:shadow-black/30">
+        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-700 dark:text-emerald-400">Mapa geográfico real</p>
+        <h2 className="mt-0.5 text-base font-extrabold text-slate-900 dark:text-white">Perú por departamentos</h2>
+        <div className="mt-2 grid grid-cols-3 gap-2 text-xs">
+          <MapKpi label="Distritos" value={formatNumber(totalDistritos)} />
+          <MapKpi label="Alto/muy alto" value={formatNumber(highOrVeryHigh)} />
+          <MapKpi label="Org." value={formatNumber(orgCount)} />
         </div>
       </div>
 
-      <div className="absolute bottom-5 left-5 z-[500] rounded-2xl border border-white/80 bg-white/95 p-4 text-sm shadow-lg shadow-slate-200/70 backdrop-blur">
-        <div className="mb-2 font-bold text-slate-800">Riesgo por anemia promedio</div>
+      <div className="absolute bottom-4 left-4 z-[500] hidden rounded-2xl border border-white/80 bg-white/95 p-3 text-sm shadow-lg shadow-slate-200/70 backdrop-blur sm:block dark:border-slate-700 dark:bg-slate-800/95 dark:shadow-black/30">
+        <div className="mb-2 font-bold text-slate-800 dark:text-slate-100">Riesgo por anemia promedio</div>
         <LegendItem color={colorFor("MUY_ALTO")} label="Muy alto ≥ 45%" />
         <LegendItem color={colorFor("ALTO")} label="Alto 35%–44.9%" />
         <LegendItem color={colorFor("MEDIO")} label="Medio 25%–34.9%" />
         <LegendItem color={colorFor("BAJO")} label="Bajo < 25%" />
         <LegendItem color={colorFor("SIN_DATOS")} label="Sin datos" />
-        <div className="mt-3 border-t pt-2 text-[11px] leading-4 text-slate-500">
+        <div className="mt-3 border-t pt-2 text-[11px] leading-4 text-slate-500 dark:border-slate-700 dark:text-slate-400">
           Fuente de riesgo: ENDES 2024 / INEI.<br />Límites: GeoJSON departamental.
         </div>
       </div>
 
       {error && (
-        <div className="absolute inset-0 z-[600] grid place-items-center bg-white/90 p-6">
+        <div className="absolute inset-0 z-[600] grid place-items-center bg-white/90 p-6 dark:bg-slate-900/90">
           <div className="max-w-lg rounded-2xl border border-red-200 bg-red-50 p-5 text-red-800 shadow-lg">
             <h3 className="font-bold">No se pudo cargar el mapa detallado</h3>
             <p className="mt-2 text-sm">{error}</p>
@@ -371,9 +375,11 @@ export default function PeruGeoMap({ distritos = [], onSelect }) {
       )}
 
       {!geoData && !error && (
-        <div className="absolute inset-0 z-[600] grid place-items-center bg-slate-50/70">
-          <div className="rounded-2xl border bg-white px-5 py-4 text-sm font-semibold text-slate-600 shadow-lg">
-            Cargando límites departamentales del Perú…
+        <div className="absolute inset-0 z-[600] grid place-items-center bg-slate-50/70 dark:bg-slate-900/70">
+          <div className="w-64 rounded-2xl border bg-white p-4 shadow-lg dark:border-slate-700 dark:bg-slate-800">
+            <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">Cargando límites del Perú…</p>
+            <div className="nm-skeleton mt-3 h-3 w-full animate-shimmer rounded-full" />
+            <div className="nm-skeleton mt-2 h-3 w-2/3 animate-shimmer rounded-full" />
           </div>
         </div>
       )}
@@ -407,7 +413,7 @@ export default function PeruGeoMap({ distritos = [], onSelect }) {
 
 function LegendItem({ color, label }) {
   return (
-    <div className="flex items-center gap-2 py-1 text-slate-700">
+    <div className="flex items-center gap-2 py-1 text-slate-700 dark:text-slate-300">
       <span className="h-3.5 w-3.5 rounded-md shadow-sm" style={{ background: color }} />
       <span>{label}</span>
     </div>
@@ -416,9 +422,9 @@ function LegendItem({ color, label }) {
 
 function MapKpi({ label, value }) {
   return (
-    <div className="rounded-xl border border-slate-100 bg-slate-50 p-2">
-      <div className="text-[10px] uppercase tracking-wide text-slate-500">{label}</div>
-      <div className="text-base font-extrabold text-slate-900">{value}</div>
+    <div className="rounded-xl border border-slate-100 bg-slate-50 p-2 dark:border-slate-700 dark:bg-slate-700/60">
+      <div className="text-[10px] uppercase tracking-wide text-slate-500 dark:text-slate-400">{label}</div>
+      <div className="text-base font-extrabold text-slate-900 dark:text-white">{value}</div>
     </div>
   );
 }
