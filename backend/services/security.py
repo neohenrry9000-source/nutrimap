@@ -89,7 +89,7 @@ def require_cuenta_activa(fn):
     @functools.wraps(fn)
     def wrapper(*a, **kw):
         from services.supabase_client import client_service
-        row = (client_service().table("usuarios").select("*")
+        row = (client_service().table("usuarios").select("estado")
                .eq("id", g.user["sub"]).limit(1).execute())
         estado = (row.data[0].get("estado") if row.data else None) or "activo"
         if estado == "baneado":
