@@ -27,4 +27,5 @@ def register_security_headers(app):
         # HSTS: solo cuando se sirve por HTTPS (Render lo hace)
         if not app.config.get("DEBUG"):
             resp.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+        resp.headers["Cache-Control"] = "no-store"
         return resp

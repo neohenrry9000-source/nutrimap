@@ -98,7 +98,7 @@ class TestPerfil:
 
 
 class TestAvatar:
-    B64 = base64.b64encode(b"png-falso").decode()
+    B64 = base64.b64encode(b"\x89PNG\r\n\x1a\nfake-png-content").decode()
 
     def test_subida_ok_y_persistida(self, client, db, auth):
         u = datos.usuario(db)

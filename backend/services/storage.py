@@ -12,9 +12,22 @@ import time
 _EXT = {"image/png": "png", "image/jpeg": "jpg", "image/webp": "webp"}
 MAX_BYTES = 1_500_000  # ~1.5 MB decodificados (el frontend comprime a ~256px)
 
+_MAGIC = {
+    "image/png":  [(0, b"\x89PNG")],
+    "image/jpeg": [(0, b"\xff\xd8\xff")],
+    "image/webp": [(0, b"RIFF"), (8, b"WEBP")],
+}
+
 
 class AvatarInvalido(ValueError):
     pass
+
+
+def _validar_magic(data: bytes, mime: str) -> bool:
+    for offset, signature in _MAGIC.get(mime, []):
+        if data[offset:offset + len(signature)] != signature:
+            return False
+    return True
 
 
 def subir_avatar(sb, carpeta: str, entidad_id: str, imagen_base64: str, mime: str) -> str:
@@ -28,6 +41,8 @@ def subir_avatar(sb, carpeta: str, entidad_id: str, imagen_base64: str, mime: st
         raise AvatarInvalido("base64 inválido") from e
     if not data or len(data) > MAX_BYTES:
         raise AvatarInvalido("imagen vacía o demasiado grande (máx 1.5 MB)")
+    if not _validar_magic(data, mime):
+        raise AvatarInvalido("el contenido no coincide con el tipo de imagen declarado")
 
     ext = _EXT[mime]
     ruta = f"{carpeta}/{entidad_id}.{ext}"
