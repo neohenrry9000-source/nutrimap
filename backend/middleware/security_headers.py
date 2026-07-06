@@ -25,7 +25,7 @@ def register_security_headers(app):
         resp.headers["Permissions-Policy"] = "geolocation=(), camera=(), microphone=(), payment=()"
         # Payment: El navegador también tiene bloqueado el acceso a la API de pagos del navegador (Apple Pay/Google Pay)
         # HSTS: solo cuando se sirve por HTTPS (Render lo hace)
-        if not app.config.get("DEBUG"):
+        if app.config.get("SECURE_COOKIES"):
             resp.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
         resp.headers["Cache-Control"] = "no-store"
         return resp
