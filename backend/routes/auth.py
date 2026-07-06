@@ -23,9 +23,9 @@ bp_auth = Blueprint("auth", __name__)
 
 def _cookie_attrs():
     """Atributos de la cookie de sesión según entorno (ver login)."""
-    is_prod = not current_app.config.get("DEBUG")
-    return {"httponly": True, "secure": is_prod,
-            "samesite": "None" if is_prod else "Lax"}
+    secure = current_app.config.get("SECURE_COOKIES", False)
+    return {"httponly": True, "secure": secure,
+            "samesite": "None" if secure else "Lax"}
 
 
 @bp_auth.post("/register")
