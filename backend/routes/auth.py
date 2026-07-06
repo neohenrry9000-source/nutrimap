@@ -66,12 +66,12 @@ def login():
 
     hace_una_hora = (datetime.now(timezone.utc) - timedelta(hours=1)).isoformat()
     fallos = (sb.table("intentos_login")
-                .select("id", count="exact")
+                .select("id")
                 .eq("email", data.email)
                 .eq("exito", False)
                 .gte("created_at", hace_una_hora)
                 .execute())
-    if (fallos.count or 0) >= 10:
+    if len(fallos.data or []) >= 10:
         return jsonify(error="too_many_attempts",
                        detail="Demasiados intentos fallidos. Intenta en 1 hora."), 429
 
